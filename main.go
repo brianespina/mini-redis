@@ -38,17 +38,18 @@ func handleConn(c net.Conn) {
 		n, err := readInt(r, "*")
 		if err != nil {
 			fmt.Println("Client disconnected", err)
+			return
 		}
 
-		//ARGS
+		//args buffer
 		args := []string{}
 
-		//loop N times
-		//read byte size
+		//loop array len times
 		for range n {
 			command, err := readCommand(r)
 			if err != nil {
 				fmt.Println("Client disconnected", err)
+				return
 			}
 			args = append(args, command)
 		}
