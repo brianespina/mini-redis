@@ -31,7 +31,7 @@ func readInt(r *bufio.Reader, prefix string) (int, error) {
 	return n, nil
 }
 
-func readCommand(r *bufio.Reader) (string, error) {
+func readBulkString(r *bufio.Reader) (string, error) {
 	byteCount, err := readInt(r, "$")
 
 	if err != nil {
@@ -50,6 +50,25 @@ func readCommand(r *bufio.Reader) (string, error) {
 	}
 
 	return string(buf), nil
+}
+func readCommands(r *bufio.Reader) ([]string, error) {
+
+	n, err := readInt(r, "*")
+	if err != nil {
+		return []string{}, err
+	}
+
+	buf := make([]string, 0, n)
+
+	for range n {
+		s, err := readBulkString(r)
+		if err != nil {
+			return []string{}, err
+		}
+		buf = append(buf, s)
+	}
+
+	return buf, nil
 }
 
 func crlf(r *bufio.Reader) error {
