@@ -84,3 +84,7 @@ func crlf(r *bufio.Reader) error {
 
 	return nil
 }
+
+func serializeString([]string) []byte {
+	return []byte("$3\r\nHey\r\n")
+}

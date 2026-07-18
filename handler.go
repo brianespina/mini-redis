@@ -14,9 +14,6 @@ func handleConn(c net.Conn) {
 	r := bufio.NewReader(c)
 
 	for {
-
-		fmt.Println("run")
-
 		args, err := readCommands(r)
 		if err != nil {
 			fmt.Println("Client disconnected", err)
@@ -26,12 +23,22 @@ func handleConn(c net.Conn) {
 		if len(args) == 0 {
 			continue
 		}
+		fmt.Println(args)
 
 		switch strings.ToUpper(args[0]) {
 		case "COMMAND":
 			c.Write([]byte("*0\r\n"))
 		case "PING":
 			c.Write([]byte("+PONG\r\n"))
+		case "ECHO":
+			if len(args) < 2 {
+				c.Write([]byte("-ERR wrong number of arguments\r\n"))
+				break
+			}
+
+			response := fmt.Sprintf("$%d\r\n%s\r\n", len(args[1]), args[1])
+			c.Write([]byte(response))
+
 		default:
 			c.Write([]byte("-ERR unknown command\r\n"))
 		}
