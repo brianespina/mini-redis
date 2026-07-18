@@ -31,7 +31,7 @@ func handleConn(c net.Conn) {
 		case "PING":
 			c.Write([]byte("+PONG\r\n"))
 		case "ECHO":
-			if len(args) < 2 {
+			if len(args) != 2 {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
