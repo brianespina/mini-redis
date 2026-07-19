@@ -3,6 +3,12 @@ package main
 import (
 	"fmt"
 	"net"
+	"sync"
+)
+
+var (
+	store = make(map[string]string)
+	mu    sync.RWMutex
 )
 
 func main() {
