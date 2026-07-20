@@ -19,6 +19,8 @@ Keep it honest
 # Note
 I began keeping this log while writing tests for the parser; everything before that lives in the commit history and my memory
 
+---
+
 ## Log 5: Unit Testing 07/20/2026
 **Built** my first test file for the `readInt` function of the parser. `resp_test.go`. 
 
@@ -33,6 +35,8 @@ I began keeping this log while writing tests for the parser; everything before t
 - so you can simulate a stream with `string.NewReader`. anything `io.Reader` interface can is stream like, be it a string or file or socket. anything pull-based, read-whatever's-availablet-now source. 
 
 **For future-me** do more reps with writing tests, write table-based(whatever that is) test. before you move on to anything else in the project. write tests for the parser. 
+
+---
 
 ## Log 6: Unit Testing 07/20/2026
 **Built** Table-driven tests cases for `readInt` and `readBulkString`. 
