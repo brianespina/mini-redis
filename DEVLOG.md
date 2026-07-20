@@ -72,6 +72,18 @@ Keep it honest
 **For future-me:** The store is concurrency-safe *by construction* now — no amount of hammering can reproduce the crash, because the lock makes the collision impossible, not just improbable. That's the difference between "passed the test" and "cannot fail." Channels are coming for pub/sub, where message-passing fits the problem naturally.
 ---
 
+## Log 5
+**Built** my first test file for the `readInt` function of the parser. `resp_test.go`. 
+**What broke / confused me**
+- The whole mental model of writing test is totally different. the logic got jumbled in my head. its a totaly new skill that I'm excited to learn. 
+- The difference of `t.Fatal` and `t.Error`. I just wrote the test and did not really understand what I'm writing or if its even usefull.
+- How do you even test it without running server, a client connected and sending commands. 
+**Concept Unlocked**
+- I started to wrap my head around the pattern(or maybe structure is the better word) of tests. Its still a bit confusing at times but I just need reps
+- `t.Fatal` totaly stops the the test and fails it. `t.Error` does not stop the test, it takes note of the error and keeps going. 
+- so you can simulate a stream with `string.NewReader`. anything `io.Reader` interface can is stream like, be it a string or file or socket. anything pull-based, read-whatever's-availablet-now source. 
+**For future-me** do more reps with writing tests, write table-based(whatever that is) test. before you move on to anything else in the project. write tests for the parser. 
+
 ## Recurring theme: the missing `return`
 The disconnect error check (`if err != nil { print; return }`) lost its `return` roughly **four times** across refactors. Without it, a dead connection spins at 100% CPU forever. Lesson banked: *checking* an error is nothing; the decision *after* it is the handling. Made the disconnect test (`ctrl-C` the client, expect exactly one log line) a permanent part of the gauntlet so tooling catches what my eyes miss.
 ---

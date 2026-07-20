@@ -39,7 +39,9 @@ func readBulkString(r *bufio.Reader) (string, error) {
 	}
 
 	buf := make([]byte, byteCount)
+
 	_, err = io.ReadFull(r, buf)
+
 	if err != nil {
 		return "", err
 	}
@@ -73,6 +75,7 @@ func readCommands(r *bufio.Reader) ([]string, error) {
 
 func crlf(r *bufio.Reader) error {
 	buf := make([]byte, 2)
+
 	_, err := io.ReadFull(r, buf)
 	if err != nil {
 		return err
