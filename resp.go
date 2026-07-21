@@ -57,7 +57,7 @@ func readCommands(r *bufio.Reader) ([]string, error) {
 
 	n, err := readInt(r, "*")
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	buf := make([]string, 0, n)
@@ -65,7 +65,7 @@ func readCommands(r *bufio.Reader) ([]string, error) {
 	for range n {
 		s, err := readBulkString(r)
 		if err != nil {
-			return []string{}, err
+			return nil, err
 		}
 		buf = append(buf, s)
 	}
