@@ -1,3 +1,13 @@
+# mini-redis
+
+A Redis server built from scratch in Go — no frameworks, no dependencies,
+just the standard library — to learn how a networked in-memory database works
+underneath: raw TCP sockets, a hand-written protocol parser, concurrent client
+handling, and safe shared state.
+
+It implements the real [RESP protocol](https://redis.io/docs/latest/develop/reference/protocol-spec/),
+so actual Redis clients (`redis-cli`, `valkey-cli`) talk to it directly.
+
 The server listens on `:6379`. Connect with any Redis client:
  
 ```sh
