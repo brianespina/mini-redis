@@ -85,7 +85,7 @@ I began keeping this log while writing tests for the parser; everything before t
 **For future-me**: 
 - look more into assertions, now that the store is type  
 - `map[string]any` GET is broken. fix that next. 
-- this implementation of storing multiple types, I can already see as very flimsy. I know that. I decided to do this implementation because this is exactly how I would implement it. I want to feel how this sucks, I wan't to feel how flimsy it is, after a couple more command implementation. I'm going to study the right way and reformat the commands. 
+- this implementation of storing multiple types, I can already see as very flimsy. I know that. I decided to do this implementation because this is exactly how I would implement it. I want to feel how this sucks, I wan't to feel how flimsy it is, after a couple more command implementation. I'm going to study the right way and refactor the commands. 
 
 ---
 
