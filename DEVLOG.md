@@ -56,6 +56,7 @@ I began keeping this log while writing tests for the parser; everything before t
 ## Log 7: Unit Testing 07/21/2026
 **Built** Created tests for all of the parser functions. 
 
+**What broke / confused me**
 - I'm still getting confused with the conditional statements, I said `if slices.Equal` then fail the test. it should be `if !slices.Equal` then fail the test. the logic is inverted in tests so I'm still getting tripped up with that.  
 - got confused on the concept of testing finite `io.Reader`s like `strings.NewReader` and actual client connections without EOF. 
 - Not sure if my test cases are good, I know some of them are overlapping on some functions, I'm using `readInt` in `readCommands` so there is some overlap in test cases, is that ok? or is that bad practice? I don't know. 
@@ -65,6 +66,26 @@ I began keeping this log while writing tests for the parser; everything before t
 - so apparently a little overlap is fine, but ideally minimal, you have to check if for instance `readCommands` is introducing a point of failure, something like that. 
 
 **For future-me** I'm ending this Unit Testing Phase for now, since I finished the Goal of creating tests for all the functions in the RESP parser. I'll keep writing tests for my functions moving forward. Testing is still new to me but its not black box anymore. one conclusion I've made with this is that, Testing is a skill of its own that I need to have the muscle for if I want to be a serious programmer. 
+
+---
+
+
+## Log 8: Storing multiple types 07/23/2026
+**Built** Implemented LPUSH command.
+
+**What broke/ confused me**
+- I'm kinda new at type assertions, I encountered it before I did not really understand it that much. 
+- confused working with `any` type. 
+- so in LPUSH you are reading updating and then writing, I wrote the locks only just encapsulating the actual read and writes. thought it would be easier to see and not miss unlocks. but apparently this intoduces errors when 2 clients are doing LPUSH. 
+
+**Concept Unlocked** 
+- ok type assertions, I understand them more now in the contect of having `any` type, you are just saying to the compiler, this `any` "right here I expect this type, is it?" , it returns two things, the first one, the value(or pointer?) as the type you asserted with, or nil if its not?, and the second a `bool` if the assertion was successfull? or possible? I need to look into this more. 
+- So working with the locks I had a deeper understanding of `slices`, `arrays` because of the function `append()`. so slices are a structs that has a pointer, a lenth, and a capacity. I vaguely remember this when I was studying C, I had to implement append. when you initialize a `slice` or create a slice varaiable, or read a slice. Whatever the variable its being hel at also has a new copy of the length and capacity, the variable has its own bookeeping of those numbers but has the pointer to the same memmory, so if there are 2 clients holding their own separate bookeeping of the same memory writes at the same time, that is going to introduce problems. so the correct thing to do: whenever you are doing read-update-write on the shared store, you need to treat the whole opperation as one whole thing and lock it.  
+
+**For future-me**: 
+- look more into assertions, now that the store is type  
+- `map[string]any` GET is broken. fix that next. 
+- this implementation of storing multiple types, I can already see as very flimsy. I know that. I decided to do this implementation because this is exactly how I would implement it. I want to feel how this sucks, I wan't to feel how flimsy it is, after a couple more command implementation. I'm going to study the right way and reformat the commands. 
 
 ---
 

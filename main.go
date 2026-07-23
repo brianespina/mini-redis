@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	store = make(map[string]string)
+	store = make(map[string]any)
 	mu    sync.RWMutex
 )
 
