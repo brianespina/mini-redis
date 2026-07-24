@@ -53,19 +53,22 @@ func handleConn(c net.Conn) {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
+
 			mu.RLock()
 			val, ok := store[args[1]]
 			mu.RUnlock()
 
 			if ok {
 				s, ok := val.(string)
-				if ok {
-					fmt.Fprintf(c, "$%d\r\n%s\r\n", len(s), s)
-
+				if !ok {
+					c.Write([]byte("-WRONGTYPE Operation against a key holding the wrong kind of value\r\n"))
+					break
 				}
+				fmt.Fprintf(c, "$%d\r\n%s\r\n", len(s), s)
 			} else {
 				c.Write([]byte("$-1\r\n"))
 			}
+
 		case "LPUSH":
 			if len(args) != 3 {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
