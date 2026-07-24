@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -69,6 +70,58 @@ func handleConn(c net.Conn) {
 				c.Write([]byte("$-1\r\n"))
 			}
 
+		case "LRANGE":
+			if len(args) != 4 {
+				c.Write([]byte("-ERR wrong number of arguments\r\n"))
+				break
+			}
+
+			existing, exist := store[args[1]]
+			if exist {
+				l, ok := existing.([]string)
+				if !ok {
+					c.Write([]byte("-WRONGTYPE Operation against a key holding the wrong kind of value\r\n"))
+					break
+				}
+
+				start, err := strconv.Atoi(args[2])
+				if err != nil {
+					c.Write([]byte("-value is not an integer or out of range"))
+					break
+				}
+				end, err := strconv.Atoi(args[3])
+				if err != nil {
+					c.Write([]byte("-value is not an integer or out of range"))
+					break
+				}
+
+				n := len(l)
+				if start < 0 {
+					start = n + start
+				}
+				if end < 0 {
+					end = n + end
+				}
+
+				if start < 0 {
+					start = 0
+				}
+				if end > n {
+					end = n
+				}
+
+				if start > end || start > n {
+					fmt.Println([]string{})
+					break
+				}
+
+				fmt.Println(l[start : end+1])
+
+				c.Write([]byte("*0\r\n"))
+				break
+			}
+
+			c.Write([]byte("*0\r\n"))
 		case "LPUSH":
 			if len(args) != 3 {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))

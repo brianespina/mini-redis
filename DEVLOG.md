@@ -89,3 +89,18 @@ I began keeping this log while writing tests for the parser; everything before t
 
 ---
 
+## Log 9: LRANGE 07/24/2026
+**Built ** Implemented LRANGE command. 
+
+**What broke/ confused me**
+- the logic of the range itself, reading the redis documentation, I saw `LRANGE key 0 -1`, I see -1 and imidiately thought `oh the indexes loops!` and so I used modulo, I implemented it `start = start % length` `end = end % length` this gave me all sorts of unexpected results. including panicing the server. 
+- of-by-one error in my clamp logic. working with arrays indexes and lengths are still so confusing to me. 
+
+**Concept unlocked**
+- with Go slices you can go over the len for instance an array with `len = 3` and you go `array[0:4]` <- this is valid as long as its not over the capacity. this triped me up debugging the of-by-one. 
+- figured out that the indexes are not looping. there is no modulo at all. you just calculate the offset by adding the lenght if there are negative numbers, then clamp them. 
+
+**For future-me:**
+- do not move on from this command until you have a mental pictuse of the of-by-one, and it makes sense in your head. 
+- you need more reps of working with arrays. (maybe leet code problems)
+- there is still an of-by-one bug in the code, fix it
