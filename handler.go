@@ -96,6 +96,7 @@ func handleConn(c net.Conn) {
 				}
 
 				n := len(l)
+
 				if start < 0 {
 					start = n + start
 				}
@@ -106,8 +107,8 @@ func handleConn(c net.Conn) {
 				if start < 0 {
 					start = 0
 				}
-				if end > n {
-					end = n
+				if end >= n {
+					end = n - 1
 				}
 
 				if start > end || start > n {
