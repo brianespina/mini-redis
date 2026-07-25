@@ -118,7 +118,7 @@ func handleConn(c net.Conn) {
 
 				fmt.Println(l[start : end+1])
 
-				c.Write([]byte("*0\r\n"))
+				c.Write([]byte(serializeArray(l[start : end+1])))
 				break
 			}
 
@@ -154,4 +154,21 @@ func handleConn(c net.Conn) {
 		}
 
 	}
+}
+
+func serializeBulkString(s string) string {
+	l := len(s)
+	return fmt.Sprintf("$%d\r\n%s\r\n", l, s)
+}
+
+func serializeArray(arr []string) string {
+	l := len(arr)
+	arrLen := fmt.Sprintf("*%d\r\n", l)
+	bulkStringArr := make([]string, 0, len(arr))
+	for _, s := range arr {
+		bulkStringArr = append(bulkStringArr, serializeBulkString(s))
+	}
+
+	bulkString := strings.Join(bulkStringArr, "")
+	return fmt.Sprintf("%s%s", arrLen, bulkString)
 }
