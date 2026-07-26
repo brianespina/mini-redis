@@ -24,7 +24,6 @@ func handleConn(c net.Conn) {
 		if len(args) == 0 {
 			continue
 		}
-		fmt.Println(args)
 
 		switch strings.ToUpper(args[0]) {
 		case "COMMAND":
@@ -112,13 +111,11 @@ func handleConn(c net.Conn) {
 				}
 
 				if start > end || start > n {
-					fmt.Println([]string{})
+					WriteSerializedArray(c, []string{})
 					break
 				}
 
-				fmt.Println(l[start : end+1])
-
-				c.Write([]byte(serializeArray(l[start : end+1])))
+				WriteSerializedArray(c, l[start:end+1])
 				break
 			}
 
@@ -156,19 +153,13 @@ func handleConn(c net.Conn) {
 	}
 }
 
-func serializeBulkString(s string) string {
-	l := len(s)
-	return fmt.Sprintf("$%d\r\n%s\r\n", l, s)
-}
+func WriteSerializedArray(c net.Conn, arr []string) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "*%d\r\n", len(arr))
 
-func serializeArray(arr []string) string {
-	l := len(arr)
-	arrLen := fmt.Sprintf("*%d\r\n", l)
-	bulkStringArr := make([]string, 0, len(arr))
 	for _, s := range arr {
-		bulkStringArr = append(bulkStringArr, serializeBulkString(s))
+		fmt.Fprintf(&b, "$%d\r\n%s\r\n", len(s), s)
 	}
 
-	bulkString := strings.Join(bulkStringArr, "")
-	return fmt.Sprintf("%s%s", arrLen, bulkString)
+	c.Write([]byte(b.String()))
 }
