@@ -143,7 +143,7 @@ func handleConn(c net.Conn) {
 
 			list = append(list, args[2])
 			store[args[1]] = list
-			c.Write([]byte(fmt.Sprintf(":%d\r\n", len(list))))
+			fmt.Fprintf(c, ":%d\r\n", len(list))
 			mu.Unlock()
 
 		default:
