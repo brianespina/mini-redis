@@ -27,7 +27,7 @@ func handleConn(c net.Conn) {
 
 		switch strings.ToUpper(args[0]) {
 		case "COMMAND":
-			c.Write([]byte("*0\r\n"))
+			WriteSerializedArray(c, []string{})
 		case "PING":
 			c.Write([]byte("+PONG\r\n"))
 		case "ECHO":
@@ -44,7 +44,7 @@ func handleConn(c net.Conn) {
 				break
 			}
 			mu.Lock()
-			store[args[1]] = args[2]
+			store[args[1]] = newStringVal(args[2])
 			mu.Unlock()
 			c.Write([]byte("+OK\r\n"))
 		case "DEL":

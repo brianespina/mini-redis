@@ -7,8 +7,7 @@ import (
 )
 
 var (
-	store = make(map[string]any)
-	mu    sync.RWMutex
+	mu sync.RWMutex
 )
 
 func main() {
