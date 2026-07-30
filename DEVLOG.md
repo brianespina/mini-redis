@@ -104,3 +104,17 @@ I began keeping this log while writing tests for the parser; everything before t
 - do not move on from this command until you have a mental pictuse of the of-by-one, and it makes sense in your head. 
 - you need more reps of working with arrays. (maybe leet code problems)
 - there is still an of-by-one bug in the code, fix it
+
+## Log 10: store from `any` type to `struct` type 07/30/2026
+**Built** Implemented struct type for the store 
+
+**What broke / confused me**
+- understanding the iota thing, 
+- everything is broken now. the commands are all broken because they expect `map[string]any` type on the store. 
+
+**Concept unlocked**
+- `sum types` which Go does not really have, you can work around it and have some kind of sum types in Go with struct types, but it does come at a cost, memory, its minimal because its just the zero values, but still, in my case today, I have `Value` type wich has both a `string` and an `[]string` type inside it, and `kind` field. so there is always an zero value in it whatever the `kind` is.
+
+**For future-me:**
+- consider moving store to a separate package. 
+- this is the first big refactoring your doing, this looks super fun, take it slow, understand your code, enjoy it. 
