@@ -47,6 +47,24 @@ func handleConn(c net.Conn) {
 			store[args[1]] = args[2]
 			mu.Unlock()
 			c.Write([]byte("+OK\r\n"))
+		case "DEL":
+
+			if len(args) < 2 {
+				c.Write([]byte("-ERR wrong number of arguments\r\n"))
+				break
+			}
+
+			count := 0
+			mu.Lock()
+			for _, key := range args[1:] {
+				_, exits := store[key]
+				if exits {
+					delete(store, key)
+					count++
+				}
+			}
+			mu.Unlock()
+			fmt.Fprintf(c, ":%d\r\n", count)
 
 		case "GET":
 			if len(args) != 2 {
