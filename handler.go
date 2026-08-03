@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"mini-redis/store"
 	"net"
 	"strconv"
 	"strings"
@@ -44,7 +45,9 @@ func handleConn(c net.Conn) {
 				break
 			}
 			mu.Lock()
-			store[args[1]] = newStringVal(args[2])
+
+			store[args[1]] = args[2]
+
 			mu.Unlock()
 			c.Write([]byte("+OK\r\n"))
 		case "DEL":
@@ -73,15 +76,15 @@ func handleConn(c net.Conn) {
 			}
 
 			mu.RLock()
-			val, ok := store[args[1]]
+			val, ok := store.Get(args[1])
 			mu.RUnlock()
 
 			if ok {
-				s, ok := val.(string)
-				if !ok {
+				if val.GetValueKind() != store.KindString {
 					c.Write([]byte("-WRONGTYPE Operation against a key holding the wrong kind of value\r\n"))
 					break
 				}
+				s := val.GetStr()
 				fmt.Fprintf(c, "$%d\r\n%s\r\n", len(s), s)
 			} else {
 				c.Write([]byte("$-1\r\n"))
