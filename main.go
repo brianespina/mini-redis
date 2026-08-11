@@ -3,11 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"sync"
-)
-
-var (
-	mu sync.RWMutex
 )
 
 func main() {

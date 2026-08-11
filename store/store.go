@@ -1,5 +1,13 @@
 package store
 
+import (
+	"sync"
+)
+
+var (
+	mu sync.RWMutex
+)
+
 type ValueKind int
 
 const (
@@ -13,6 +21,14 @@ type Value struct {
 	list []string
 }
 
+func (v Value) GetStr() string {
+	return v.str
+}
+
+func (v Value) GetValueKind() ValueKind {
+	return v.kind
+}
+
 var store = map[string]Value{}
 
 func Get(key string) (Value, bool) {
@@ -20,10 +36,8 @@ func Get(key string) (Value, bool) {
 	return v, ok
 }
 
-func (v Value) GetStr() string {
-	return v.str
-}
-
-func (v Value) GetValueKind() ValueKind {
-	return v.kind
+func SetString(key string, val string) {
+	store[key] = Value{kind: KindString,
+		str: val,
+	}
 }

@@ -44,11 +44,8 @@ func handleConn(c net.Conn) {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
-			mu.Lock()
+			store.SetString(args[1], args[2])
 
-			store[args[1]] = args[2]
-
-			mu.Unlock()
 			c.Write([]byte("+OK\r\n"))
 		case "DEL":
 
@@ -77,7 +74,6 @@ func handleConn(c net.Conn) {
 
 			mu.RLock()
 			val, ok := store.Get(args[1])
-			mu.RUnlock()
 
 			if ok {
 				if val.GetValueKind() != store.KindString {
@@ -89,6 +85,7 @@ func handleConn(c net.Conn) {
 			} else {
 				c.Write([]byte("$-1\r\n"))
 			}
+			mu.RUnlock()
 
 		case "LRANGE":
 			if len(args) != 4 {
