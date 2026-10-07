@@ -21,54 +21,39 @@ I began keeping this log while writing tests for the parser; everything before t
 
 ---
 
-## Log 5: Unit Testing 07/20/2026
-**Built** my first test file for the `readInt` function of the parser. `resp_test.go`. 
+## Log 10: store from `any` type to `struct` type 07/30/2026
+**Built** Implemented struct type for the store 
 
 **What broke / confused me**
-- The whole mental model of writing test is totally different. the logic got jumbled in my head. its a totaly new skill that I'm excited to learn. 
-- The difference of `t.Fatal` and `t.Error`. I just wrote the test and did not really understand what I'm writing or if its even usefull.
-- How do you even test it without running server, a client connected and sending commands. 
+- understanding the iota thing, 
+- everything is broken now. the commands are all broken because they expect `map[string]any` type on the store. 
 
-**Concept Unlocked**
-- I started to wrap my head around the pattern(or maybe structure is the better word) of tests. Its still a bit confusing at times but I just need reps
-- `t.Fatal` totaly stops the the test and fails it. `t.Error` does not stop the test, it takes note of the error and keeps going. 
-- so you can simulate a stream with `string.NewReader`. anything `io.Reader` interface can is stream like, be it a string or file or socket. anything pull-based, read-whatever's-availablet-now source. 
+**Concept unlocked**
+- `sum types` which Go does not really have, you can work around it and have some kind of sum types in Go with struct types, but it does come at a cost, memory, its minimal because its just the zero values, but still, in my case today, I have `Value` type wich has both a `string` and an `[]string` type inside it, and `kind` field. so there is always an zero value in it whatever the `kind` is.
 
-**For future-me** do more reps with writing tests, write table-based(whatever that is) test. before you move on to anything else in the project. write tests for the parser. 
+**For future-me:**
+- consider moving store to a separate package. 
+- this is the first big refactoring your doing, this looks super fun, take it slow, understand your code, enjoy it. 
 
 ---
 
-## Log 6: Unit Testing 07/20/2026
-**Built** Table-driven tests cases for `readInt` and `readBulkString`. 
+## Log 9: LRANGE 07/24/2026
+**Built ** Implemented LRANGE command. 
 
-**What broke / confused me**
-- the `wantErr` boolean is a just a bit confusing to set. 
-- the logic of one test is wrong, `wantErr` needed to be true not false. 
+**What broke/ confused me**
+- the logic of the range itself, reading the redis documentation, I saw `LRANGE key 0 -1`, I see -1 and imidiately thought `oh the indexes loops!` and so I used modulo, I implemented it `start = start % length` `end = end % length` this gave me all sorts of unexpected results. including panicing the server. 
+- of-by-one error in my clamp logic. working with arrays indexes and lengths are still so confusing to me. 
 
-**Concept Unlocked**
-- I understanding the structure of tests more and more. the mental model is starting to click. 
-- writing test is like essentially you trying to dictate the function's behavior on how to handle inputs, good or bad, I now understand why some developers start with Tests before writing the function, I've heard this is called test-driven development.
+**Concept unlocked**
+- with Go slices you can go over the len for instance an array with `len = 3` and you go `array[0:4]` <- this is valid as long as its not over the capacity. this triped me up debugging the of-by-one. 
+- figured out that the indexes are not looping. there is no modulo at all. you just calculate the offset by adding the lenght if there are negative numbers, then clamp them. 
 
-**For future-me** do more reps still writing tests, the goal before moving forward with the project is to write tests for all the functions in the RESP parser. 
-
----
-
-## Log 7: Unit Testing 07/21/2026
-**Built** Created tests for all of the parser functions. 
-
-**What broke / confused me**
-- I'm still getting confused with the conditional statements, I said `if slices.Equal` then fail the test. it should be `if !slices.Equal` then fail the test. the logic is inverted in tests so I'm still getting tripped up with that.  
-- got confused on the concept of testing finite `io.Reader`s like `strings.NewReader` and actual client connections without EOF. 
-- Not sure if my test cases are good, I know some of them are overlapping on some functions, I'm using `readInt` in `readCommands` so there is some overlap in test cases, is that ok? or is that bad practice? I don't know. 
-
-**Concept Unlocked**
-- Stream gets clearer while writing the tests, when writing test I use `strings.NewReader` this simulates a stream, but the thing with this is that `strings.NewReader` returns an EOF. in a true connection to a client, the goroutine gets parked waiting, and that is the correct behaviour, to wait for more commands. now my next question is do you just keep waiting forever? apparently in production no, there is this thing called "slowloris", its essentially expiring the connection is how I understand it, closing the conection after some time of silence. 
-- so apparently a little overlap is fine, but ideally minimal, you have to check if for instance `readCommands` is introducing a point of failure, something like that. 
-
-**For future-me** I'm ending this Unit Testing Phase for now, since I finished the Goal of creating tests for all the functions in the RESP parser. I'll keep writing tests for my functions moving forward. Testing is still new to me but its not black box anymore. one conclusion I've made with this is that, Testing is a skill of its own that I need to have the muscle for if I want to be a serious programmer. 
+**For future-me:**
+- do not move on from this command until you have a mental pictuse of the of-by-one, and it makes sense in your head. 
+- you need more reps of working with arrays. (maybe leet code problems)
+- there is still an of-by-one bug in the code, fix it
 
 ---
-
 
 ## Log 8: Storing multiple types 07/23/2026
 **Built** Implemented LPUSH command.
@@ -89,32 +74,48 @@ I began keeping this log while writing tests for the parser; everything before t
 
 ---
 
-## Log 9: LRANGE 07/24/2026
-**Built ** Implemented LRANGE command. 
-
-**What broke/ confused me**
-- the logic of the range itself, reading the redis documentation, I saw `LRANGE key 0 -1`, I see -1 and imidiately thought `oh the indexes loops!` and so I used modulo, I implemented it `start = start % length` `end = end % length` this gave me all sorts of unexpected results. including panicing the server. 
-- of-by-one error in my clamp logic. working with arrays indexes and lengths are still so confusing to me. 
-
-**Concept unlocked**
-- with Go slices you can go over the len for instance an array with `len = 3` and you go `array[0:4]` <- this is valid as long as its not over the capacity. this triped me up debugging the of-by-one. 
-- figured out that the indexes are not looping. there is no modulo at all. you just calculate the offset by adding the lenght if there are negative numbers, then clamp them. 
-
-**For future-me:**
-- do not move on from this command until you have a mental pictuse of the of-by-one, and it makes sense in your head. 
-- you need more reps of working with arrays. (maybe leet code problems)
-- there is still an of-by-one bug in the code, fix it
-
-## Log 10: store from `any` type to `struct` type 07/30/2026
-**Built** Implemented struct type for the store 
+## Log 7: Unit Testing 07/21/2026
+**Built** Created tests for all of the parser functions. 
 
 **What broke / confused me**
-- understanding the iota thing, 
-- everything is broken now. the commands are all broken because they expect `map[string]any` type on the store. 
+- I'm still getting confused with the conditional statements, I said `if slices.Equal` then fail the test. it should be `if !slices.Equal` then fail the test. the logic is inverted in tests so I'm still getting tripped up with that.  
+- got confused on the concept of testing finite `io.Reader`s like `strings.NewReader` and actual client connections without EOF. 
+- Not sure if my test cases are good, I know some of them are overlapping on some functions, I'm using `readInt` in `readCommands` so there is some overlap in test cases, is that ok? or is that bad practice? I don't know. 
 
-**Concept unlocked**
-- `sum types` which Go does not really have, you can work around it and have some kind of sum types in Go with struct types, but it does come at a cost, memory, its minimal because its just the zero values, but still, in my case today, I have `Value` type wich has both a `string` and an `[]string` type inside it, and `kind` field. so there is always an zero value in it whatever the `kind` is.
+**Concept Unlocked**
+- Stream gets clearer while writing the tests, when writing test I use `strings.NewReader` this simulates a stream, but the thing with this is that `strings.NewReader` returns an EOF. in a true connection to a client, the goroutine gets parked waiting, and that is the correct behaviour, to wait for more commands. now my next question is do you just keep waiting forever? apparently in production no, there is this thing called "slowloris", its essentially expiring the connection is how I understand it, closing the conection after some time of silence. 
+- so apparently a little overlap is fine, but ideally minimal, you have to check if for instance `readCommands` is introducing a point of failure, something like that. 
 
-**For future-me:**
-- consider moving store to a separate package. 
-- this is the first big refactoring your doing, this looks super fun, take it slow, understand your code, enjoy it. 
+**For future-me** I'm ending this Unit Testing Phase for now, since I finished the Goal of creating tests for all the functions in the RESP parser. I'll keep writing tests for my functions moving forward. Testing is still new to me but its not black box anymore. one conclusion I've made with this is that, Testing is a skill of its own that I need to have the muscle for if I want to be a serious programmer. 
+
+---
+
+## Log 6: Unit Testing 07/20/2026
+**Built** Table-driven tests cases for `readInt` and `readBulkString`. 
+
+**What broke / confused me**
+- the `wantErr` boolean is a just a bit confusing to set. 
+- the logic of one test is wrong, `wantErr` needed to be true not false. 
+
+**Concept Unlocked**
+- I understanding the structure of tests more and more. the mental model is starting to click. 
+- writing test is like essentially you trying to dictate the function's behavior on how to handle inputs, good or bad, I now understand why some developers start with Tests before writing the function, I've heard this is called test-driven development.
+
+**For future-me** do more reps still writing tests, the goal before moving forward with the project is to write tests for all the functions in the RESP parser. 
+
+---
+
+## Log 5: Unit Testing 07/20/2026
+**Built** my first test file for the `readInt` function of the parser. `resp_test.go`. 
+
+**What broke / confused me**
+- The whole mental model of writing test is totally different. the logic got jumbled in my head. its a totaly new skill that I'm excited to learn. 
+- The difference of `t.Fatal` and `t.Error`. I just wrote the test and did not really understand what I'm writing or if its even usefull.
+- How do you even test it without running server, a client connected and sending commands. 
+
+**Concept Unlocked**
+- I started to wrap my head around the pattern(or maybe structure is the better word) of tests. Its still a bit confusing at times but I just need reps
+- `t.Fatal` totaly stops the the test and fails it. `t.Error` does not stop the test, it takes note of the error and keeps going. 
+- so you can simulate a stream with `string.NewReader`. anything `io.Reader` interface can is stream like, be it a string or file or socket. anything pull-based, read-whatever's-availablet-now source. 
+
+**For future-me** do more reps with writing tests, write table-based(whatever that is) test. before you move on to anything else in the project. write tests for the parser. 
