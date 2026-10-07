@@ -21,6 +21,13 @@ I began keeping this log while writing tests for the parser; everything before t
 
 ---
 
+## Log 11: finished store module refactor 10/07/2026
+**Built** refactored store module, all the store functions are stricly just for reading and writing the store, I separated all the other stuff like writing on the standard output, parsing, formating, all these other things are back in handler.go, 
+
+I've not been coding for 2 months, getting back to it after that long was not as hard as I thought, I'm taking this as I am for sure learning and the things I learned months back is all already a learned skill.
+
+---
+
 ## Log 10: store from `any` type to `struct` type 07/30/2026
 **Built** Implemented struct type for the store 
 
