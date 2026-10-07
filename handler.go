@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"mini-redis/store"
 	"net"
 	"strings"
@@ -43,23 +44,30 @@ func handleConn(c net.Conn) {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
-			store.SetString(c, args[1], args[2])
+
+			store.SetString(args[1], args[2])
+			c.Write([]byte("+OK\r\n"))
 
 		case "DEL":
-
 			if len(args) < 2 {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
-
-			store.Delete(c, args)
+			count := store.Delete(args)
+			fmt.Fprintf(c, ":%d\r\n", count)
 
 		case "GET":
 			if len(args) != 2 {
 				c.Write([]byte("-ERR wrong number of arguments\r\n"))
 				break
 			}
-			store.GetString(c, args[1])
+			str, err := store.GetString(args[1])
+			if err != nil {
+				c.Write([]byte("%-1\r\n"))
+				break
+			}
+
+			fmt.Fprintf(c, "+%s\r\n", str)
 
 		case "LRANGE":
 			if len(args) != 4 {
@@ -99,4 +107,15 @@ func handleConn(c net.Conn) {
 		}
 
 	}
+}
+
+func WriteSerializedArray(c io.Writer, arr []string) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "*%d\r\n", len(arr))
+
+	for _, s := range arr {
+		fmt.Fprintf(&b, "$%d\r\n%s\r\n", len(s), s)
+	}
+
+	c.Write([]byte(b.String()))
 }
