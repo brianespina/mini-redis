@@ -9,6 +9,12 @@ var (
 	mu sync.RWMutex
 )
 
+var (
+	ValueFetchTypeMissmatch = errors.New("Wrong type of value being fetched")
+	KeyFetchDoesNotExist    = errors.New("The key being fetched does not exist")
+	IndexOutOfRange         = errors.New("The index is out of range")
+)
+
 type ValueKind int
 
 const (
@@ -31,11 +37,11 @@ func GetString(key string) (string, error) {
 	v, ok := store[key]
 	if ok {
 		if v.kind != KindString {
-			return "", errors.New("WRONGTYPE")
+			return "", ValueFetchTypeMissmatch
 		}
 		return v.str, nil
 	} else {
-		return "", errors.New("NONEXISTING")
+		return "", KeyFetchDoesNotExist
 	}
 }
 
@@ -70,7 +76,7 @@ func GetList(key string, start int, end int) ([]string, error) {
 
 	if exist {
 		if val.kind != KindList {
-			return []string{}, errors.New("WRONGTYPE")
+			return []string{}, ValueFetchTypeMissmatch
 		}
 
 		n := len(val.list)
@@ -91,13 +97,13 @@ func GetList(key string, start int, end int) ([]string, error) {
 		}
 
 		if start > end {
-			return []string{}, errors.New("NOT INT OR OUT OF RANGE")
+			return []string{}, IndexOutOfRange
 		}
 
 		return val.list[start : end+1], nil
 	}
 
-	return []string{}, errors.New("NONEXISTING")
+	return []string{}, KeyFetchDoesNotExist
 }
 
 func SetList(key string, value ...string) (int, error) {
