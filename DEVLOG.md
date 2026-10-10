@@ -21,6 +21,20 @@ I began keeping this log while writing tests for the parser; everything before t
 
 ---
 
+## Log 12: created tests and errors 10/10/2026
+**Built** started working on tests for the new refactored store functions. 
+I am also trying writing test firt before writing the function, I'm trying this out without looking at any tutorials or articles or using any AI. 
+
+I learned about round-trip tests. 
+
+another thing I'm on today is handling errors, learned about sentinel errors and their advantages. using them is so much cleaner and more consistent. while reading about sentinel errors I learned about comparing errors and what `errors.New()` does
+
+writing test are still confusing to me, but I think I'm recognizing a pattern. I'm not sure if it just in my use case that the tests have a similar shape, or its just how it is. 
+
+last thing I looked today is the `GetList` function. messed around with it. I had to understand the logic again, why I wrote it that way. I remember this very mentally taxing when I wrote it, it is still very taxing today, but I did understand the logic and why I ended up writing it that way, I arrived at that same conclusion today. 
+
+---
+
 ## Log 11: finished store module refactor 10/07/2026
 **Built** refactored store module, all the store functions are stricly just for reading and writing the store, I separated all the other stuff like writing on the standard output, parsing, formating, all these other things are back in handler.go, 
 
