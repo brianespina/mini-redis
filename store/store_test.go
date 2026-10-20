@@ -54,8 +54,8 @@ func TestSetList(t *testing.T) {
 		wantErr bool
 	}{
 		{"Valid Input 2 values", "mylist", []string{"Brian", "Espina"}, 2, false},
-		{"Valid Input 1 value", "mylist", []string{"Ramirez"}, 1, false},
-		{"Valid Input 3 values", "mylist", []string{"Theo", "Pinion", "Espina"}, 3, false},
+		{"Valid Input 1 value", "mylist2", []string{"Ramirez"}, 1, false},
+		{"Valid Input 3 values", "mylist3", []string{"Theo", "Pinion", "Espina"}, 3, false},
 	}
 
 	for _, c := range cases {

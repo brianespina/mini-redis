@@ -106,6 +106,23 @@ func GetList(key string, start int, end int) ([]string, error) {
 	return []string{}, KeyFetchDoesNotExist
 }
 
-func SetList(key string, value ...string) (int, error) {
-	return 0, nil
+func AppendList(key string, value ...string) (int, error) {
+	v, ok := store[key]
+
+	if ok {
+		if v.kind != KindList {
+			return 0, ValueFetchTypeMissmatch
+		}
+
+		v.list = append(v.list, value...)
+		return len(v.list), nil
+
+	}
+
+	newVal := Value{
+		kind: KindList,
+		list: value,
+	}
+	store[key] = newVal
+	return len(newVal.list), nil
 }
