@@ -1,6 +1,7 @@
 package store
 
 import (
+	"slices"
 	"testing"
 )
 
@@ -60,7 +61,7 @@ func TestSetList(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got, err := SetList(c.key, c.value...)
+			got, err := AppendList(c.key, c.value...)
 			if c.wantErr {
 				if err == nil {
 					t.Fatalf("Expected an error, got none")
@@ -74,6 +75,15 @@ func TestSetList(t *testing.T) {
 
 			if got != c.want {
 				t.Errorf("want %d, got %d", c.want, got)
+			}
+
+			list, err := GetList(c.key, 0, -1)
+			if err != nil {
+				t.Fatalf("unexpected an error: %v", err)
+			}
+
+			if !slices.Equal(list, c.value) {
+				t.Errorf("want %s, got %s", c.value, list)
 			}
 
 		})
