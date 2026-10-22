@@ -106,25 +106,25 @@ func GetList(key string, start int, end int) ([]string, error) {
 	return []string{}, KeyFetchDoesNotExist
 }
 
-func AppendList(key string, value ...string) (int, error) {
+func PrependList(key string, value ...string) (int, error) {
 	mu.Lock()
 	defer mu.Unlock()
 	v, ok := store[key]
 
-	if ok {
-		if v.kind != KindList {
-			return 0, ValueFetchTypeMissmatch
-		}
-
-		v.list = append(v.list, value...)
-		return len(v.list), nil
-
+	if !ok {
+		v = Value{kind: KindList}
+	} else if v.kind != KindList {
+		return 0, ValueFetchTypeMissmatch
 	}
 
-	newVal := Value{
-		kind: KindList,
-		list: value,
+	buff := make([]string, 0, len(value)+len(v.list))
+	for i := len(value) - 1; i >= 0; i-- {
+		buff = append(buff, value[i])
 	}
-	store[key] = newVal
-	return len(newVal.list), nil
+
+	v.list = append(buff, v.list...)
+	store[key] = v
+
+	return len(v.list), nil
+
 }
