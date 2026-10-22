@@ -108,7 +108,7 @@ func GetList(key string, start int, end int) ([]string, error) {
 
 func AppendList(key string, value ...string) (int, error) {
 	mu.Lock()
-	mu.Unlock()
+	defer mu.Unlock()
 	v, ok := store[key]
 
 	if ok {
