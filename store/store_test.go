@@ -77,7 +77,7 @@ func TestSetList(t *testing.T) {
 				t.Errorf("want %d, got %d", c.want, got)
 			}
 
-			list, err := GetList(c.key, 0, -1)
+			list, err := GetRange(c.key, 0, -1)
 			if err != nil {
 				t.Fatalf("unexpected an error: %v", err)
 			}

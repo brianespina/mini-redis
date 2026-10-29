@@ -2,6 +2,7 @@ package store
 
 import (
 	"errors"
+	"slices"
 	"sync"
 )
 
@@ -13,6 +14,7 @@ var (
 	ValueFetchTypeMissmatch = errors.New("Wrong type of value being fetched")
 	KeyFetchDoesNotExist    = errors.New("The key being fetched does not exist")
 	IndexOutOfRange         = errors.New("The index is out of range")
+	KindErrorNotImplemented = errors.New("The value kind is not implemented")
 )
 
 type ValueKind int
@@ -68,7 +70,7 @@ func Delete(args []string) int {
 	return count
 }
 
-func GetList(key string, start int, end int) ([]string, error) {
+func GetRange(key string, start int, end int) ([]string, error) {
 	mu.RLock()
 	defer mu.RUnlock()
 
@@ -118,8 +120,8 @@ func PrependList(key string, value ...string) (int, error) {
 	}
 
 	buff := make([]string, 0, len(value)+len(v.list))
-	for i := len(value) - 1; i >= 0; i-- {
-		buff = append(buff, value[i])
+	for _, val := range slices.Backward(value) {
+		buff = append(buff, val)
 	}
 
 	v.list = append(buff, v.list...)
@@ -127,4 +129,48 @@ func PrependList(key string, value ...string) (int, error) {
 
 	return len(v.list), nil
 
+}
+
+func AppendList(key string, value ...string) (int, error) {
+	mu.Lock()
+	defer mu.Unlock()
+	v, ok := store[key]
+
+	if !ok {
+		v = Value{kind: KindList}
+	} else if v.kind != KindList {
+		return 0, ValueFetchTypeMissmatch
+	}
+
+	v.list = append(v.list, value...)
+	store[key] = v
+
+	return len(v.list), nil
+}
+
+func Exists(key string) bool {
+	mu.Lock()
+	defer mu.Unlock()
+	_, ok := store[key]
+	if !ok {
+		return false
+	}
+	return true
+}
+
+func ValLen(key string) (int, error) {
+	v, ok := store[key]
+	if !ok {
+		return 0, KeyFetchDoesNotExist
+	}
+
+	if v.kind == KindList {
+		return len(v.list), nil
+	}
+
+	if v.kind == KindString {
+		return len(v.str), nil
+	}
+
+	return 0, KindErrorNotImplemented
 }
